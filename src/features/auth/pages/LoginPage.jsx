@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 
 import AuthCard from '../components/AuthCard';
 import PasswordField from '../components/PasswordField';
+import {Button, Input } from '../../../shared/ui';
 import { login as loginApi } from '../api/auth.api';
 
 export default function LoginPage() {
@@ -10,7 +11,6 @@ export default function LoginPage() {
   async function onSubmit(e) {
     e.preventDefault();
     const form = new FormData(e.currentTarget);
-
     const email = String(form.get('email') || '');
     const password = String(form.get('password') || '');
 
