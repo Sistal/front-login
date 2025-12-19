@@ -15,10 +15,10 @@ const router = createBrowserRouter([
     element: <Navigate to={ROUTES.LOGIN} replace />,
   },
   {
-    path: ROUTES.AUTH_BASE,
+    path: ROUTES.LOGIN,
     element: <AuthLayout />,
     children: [
-      { path: 'login', element: <LoginPage /> },
+      { path: '/', element: <LoginPage /> },
       { path: 'register', element: <RegisterPage /> },
       { path: 'forgot-password', element: <ForgotPasswordPage /> },
       { path: 'reset-password/:token', element: <ResetPasswordPage /> },

@@ -2,23 +2,35 @@ import React from "react";
 
 export default function PasswordField({
                                           name = "password",
+                                          value,
+                                          onChange,
+                                          onBlur,
                                           placeholder = "Ingresa tu contraseña",
                                           autoComplete = "current-password",
                                           required,
                                           disabled,
                                           className = "",
+                                          id,
+                                          "aria-invalid": ariaInvalid,
+                                          "aria-describedby": ariaDescribedby,
                                       }) {
     const [show, setShow] = React.useState(false);
 
     return (
         <div className="relative">
             <input
+                id={id}
                 name={name}
+                value={value}
+                onChange={onChange}
+                onBlur={onBlur}
                 type={show ? "text" : "password"}
                 placeholder={placeholder}
                 autoComplete={autoComplete}
                 required={required}
                 disabled={disabled}
+                aria-invalid={ariaInvalid}
+                aria-describedby={ariaDescribedby}
                 className={[
                     "placeholder:text-[14px] text-[14px]",
                     "w-full rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3 pr-12 text-sm text-zinc-900",
@@ -63,12 +75,7 @@ function EyeIcon() {
 function EyeOffIcon() {
     return (
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path
-                d="M3 3l18 18"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-            />
+            <path d="M3 3l18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
             <path
                 d="M10.6 10.6A2.8 2.8 0 0 0 12 15a3 3 0 0 0 3-3c0-.5-.1-1-.4-1.4"
                 stroke="currentColor"

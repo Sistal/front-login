@@ -1,193 +1,269 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from "react";
+import AuthCard from "../components/AuthCard";
+import PasswordField from "../components/PasswordField";
+import { Button, Input } from "../../../shared/ui";
+import { login as loginApi } from "../api/auth.api";
+import { QuestionIcon, MailIcon, PhoneIcon, ShieldIcon } from "../components/Icons";
 
-import AuthCard from '../components/AuthCard';
-import PasswordField from '../components/PasswordField';
-import {Button, Input } from '../../../shared/ui';
-import { login as loginApi } from '../api/auth.api';
+const initialForm = {
+    identifier: "", // RUT o correo
+    password: "",
+};
 
 export default function LoginPage() {
-  const [status, setStatus] = useState({ type: 'idle', message: '' });
+    const [form, setForm] = useState(initialForm);
+    const [touched, setTouched] = useState({});
+    const [errors, setErrors] = useState({});
+    const [status, setStatus] = useState({ type: "idle", message: "" });
 
-  async function onSubmit(e) {
-    e.preventDefault();
-    const form = new FormData(e.currentTarget);
-    const email = String(form.get('email') || '');
-    const password = String(form.get('password') || '');
+    const isLoading = status.type === "loading";
 
-    setStatus({ type: 'loading', message: '' });
-    try {
-      await loginApi({ email, password });
-      setStatus({ type: 'success', message: 'Login OK (stub)' });
-    } catch (err) {
-      setStatus({ type: 'error', message: err?.message || 'Error al iniciar sesión' });
+    useEffect(() => {
+        setErrors(validateLogin(form));
+    }, [form]);
+
+    function handleChange(e) {
+        const { name, value } = e.target;
+        setForm((prev) => ({ ...prev, [name]: value }));
     }
-  }
 
-  return (
-      <div className="w-full space-y-6 ">
-        <AuthCard
-            title={
-              <div className="flex items-center gap-2">
-                <div className="grid h-8 w-8 place-items-center rounded-xl bg-blue-50 text-blue-700 ring-1 ring-blue-100">
-                  <ShieldIcon />
-                </div>
-                <span className="text-sm font-semibold text-zinc-900">Iniciar sesión</span>
-              </div>
-            }
-            className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm "
-        >
-          <p className="mt-4 text-sm text-zinc-600">
-            Accede al sistema para gestionar tus solicitudes de uniforme
-          </p>
+    function handleBlur(e) {
+        const { name } = e.target;
+        setTouched((prev) => ({ ...prev, [name]: true }));
+    }
 
-            <form onSubmit={onSubmit} className="mt-5 space-y-4 flex flex-col gap-4">
-                {/* RUT o correo */}
-                <div className={'flex flex-col gap-2'}>
-                    <label className="text-xs font-medium text-zinc-700">RUT o correo electrónico</label>
+    async function onSubmit(e) {
+        e.preventDefault();
 
-                    <Input
-                        name="email"
-                        type="text"
-                        placeholder="Ingresa tu RUT o correo"
-                        autoComplete="username"
-                        required
-                        disabled={status.type === 'loading'}
-                        className="mt-2 w-full rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm text-zinc-900 outline-none placeholder:text-zinc-400 focus:border-blue-300 focus:bg-white focus:ring-4 focus:ring-blue-600/10 disabled:opacity-70"
-                    />
+        setTouched({ identifier: true, password: true });
 
-                    <p className="mt-2 text-xs text-zinc-500">
-                        Ejemplo: 18456789-2 o usuario@empresa.cl
-                    </p>
-                </div>
+        const validation = validateLogin(form);
+        setErrors(validation);
 
-                {/* Password */}
-                <div className={'flex flex-col gap-2'}>
-                    <label className="text-xs font-medium text-zinc-700">Contraseña</label>
+        if (Object.keys(validation).length > 0) {
+            setStatus({ type: "error", message: "Revisa los campos marcados." });
+            return;
+        }
 
-                    <PasswordField
-                        name="password"
-                        placeholder="Ingresa tu contraseña"
-                        autoComplete="current-password"
-                        required
-                        disabled={status.type === 'loading'}
-                        className="mt-2 w-full rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm text-zinc-900 outline-none placeholder:text-zinc-400 focus:border-blue-300 focus:bg-white focus:ring-4 focus:ring-blue-600/10 disabled:opacity-70"
-                    />
-                </div>
+        try {
+            setStatus({ type: "loading", message: "" });
 
-                {/* CTA */}
-                <div className={'flex flex-col gap-5'}>
-                <Button
-                    type="submit"
-                    disabled={status.type === 'loading'}
-                    className="w-full rounded-xl py-3 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-600/20 disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                    {status.type === 'loading' ? 'Iniciando sesión…' : 'Iniciar sesión'}
-                </Button>
+            await loginApi({
+                email: form.identifier.trim(),
+                password: form.password,
+            });
 
-                {/* Forgot */}
-                <div className="text-center">
-                    <button
-                        type="button"
-                        className="text-xs font-medium text-blue-600 hover:text-blue-700 cursor-pointer"
-                        onClick={() => {
-                            // TODO: navega a /recuperar
-                        }}
+            setStatus({ type: "success", message: "Ingreso correcto." });
+        } catch (err) {
+            setStatus({
+                type: "error",
+                message: err?.message || "Error al iniciar sesión",
+            });
+        }
+    }
+
+    const showError = (field) => touched[field] && errors[field];
+    const errId = (field) => `${field}-error`;
+
+    return (
+        <div className="w-full space-y-6 ">
+            <AuthCard
+                title={
+                    <div className="flex items-center gap-2">
+                        <div className="grid h-8 w-8 place-items-center rounded-xl text-blue-700">
+                            <ShieldIcon />
+                        </div>
+                        <span className="text-sm font-semibold text-zinc-900">Iniciar sesión</span>
+                    </div>
+                }
+                className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm "
+            >
+                <p className="mt-4 text-sm text-zinc-600">
+                    Accede al sistema para gestionar tus solicitudes de uniforme
+                </p>
+
+                {status.type !== "idle" && status.type !== "loading" && (
+                    <div
+                        className={[
+                            "mt-4 rounded-xl border px-4 py-3 text-sm",
+                            status.type === "success"
+                                ? "border-emerald-200 bg-emerald-50 text-emerald-800"
+                                : "border-red-200 bg-red-50 text-red-700",
+                        ].join(" ")}
                     >
-                        ¿Olvidaste tu contraseña?
-                    </button>
-                </div>
-                </div>
-            </form>
-        </AuthCard>
+                        {status.message}
+                    </div>
+                )}
 
-          {/* Support card */}
-          <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
-          <div className="flex items-start gap-3">
-            <div className="grid h-10 w-10 place-items-center rounded-xl bg-blue-50 text-blue-700 ring-1 ring-blue-100">
-              <QuestionIcon />
+                <form onSubmit={onSubmit} className="mt-5 space-y-4 flex flex-col gap-4">
+                    <div className="flex flex-col gap-2">
+                        <label className="text-xs font-medium text-zinc-700" htmlFor="identifier">
+                            RUT o correo electrónico
+                        </label>
+
+                        <Input
+                            id="identifier"
+                            name="identifier"
+                            type="text"
+                            placeholder="Ingresa tu RUT o correo"
+                            autoComplete="username"
+                            required
+                            disabled={isLoading}
+                            value={form.identifier}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            aria-invalid={!!showError("identifier")}
+                            aria-describedby={showError("identifier") ? errId("identifier") : undefined}
+                            className={[
+                                "mt-2 w-full rounded-xl border bg-zinc-50 px-4 py-3 text-sm text-zinc-900 outline-none placeholder:text-zinc-400",
+                                "focus:bg-white focus:ring-4 focus:ring-blue-600/10 disabled:opacity-70",
+                                showError("identifier")
+                                    ? "border-red-300 focus:border-red-300"
+                                    : "border-zinc-200 focus:border-blue-300",
+                            ].join(" ")}
+                        />
+
+                        {showError("identifier") ? (
+                            <p id={errId("identifier")} className="text-xs text-red-600">
+                                {errors.identifier}
+                            </p>
+                        ) : (
+                            <p className="mt-2 text-xs text-zinc-500">Ejemplo: 18456789-2 o usuario@empresa.cl</p>
+                        )}
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                        <label className="text-xs font-medium text-zinc-700" htmlFor="password">
+                            Contraseña
+                        </label>
+
+                        <PasswordField
+                            id="password"
+                            name="password"
+                            placeholder="Ingresa tu contraseña"
+                            autoComplete="current-password"
+                            required
+                            disabled={isLoading}
+                            value={form.password}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            aria-invalid={!!showError("password")}
+                            aria-describedby={showError("password") ? errId("password") : undefined}
+                            className={showError("password") ? "border-red-300 focus:border-red-300" : ""}
+                        />
+
+                        {showError("password") && (
+                            <p id={errId("password")} className="text-xs text-red-600">
+                                {errors.password}
+                            </p>
+                        )}
+                    </div>
+
+                    <div className="flex flex-col gap-5">
+                        <Button
+                            type="submit"
+                            disabled={isLoading}
+                            className="w-full rounded-xl py-3 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-600/20 disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                            {isLoading ? "Iniciando sesión…" : "Iniciar sesión"}
+                        </Button>
+
+                        <div className="text-center">
+                            <a
+                                className="text-xs font-medium text-blue-600 hover:text-blue-700 cursor-pointer "
+                                href={"/forgot-password"}
+                            >
+                                ¿Olvidaste tu contraseña?
+                            </a>
+                        </div>
+                    </div>
+                </form>
+
+                <div className="flex gap-5 w-full justify-center text-sm">
+                    <span>¿No tienes una cuenta?</span>
+                    <a className="text-blue-600 font-bold" href={"/register"}>
+                        Regístrate Aquí
+                    </a>
+                </div>
+            </AuthCard>
+
+            <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
+                <div className="flex items-start gap-3">
+                    <div className="grid h-10 w-10 place-items-center rounded-xl bg-blue-50 text-blue-700 ring-1 ring-blue-100">
+                        <QuestionIcon />
+                    </div>
+
+                    <div className="min-w-0 flex flex-col gap-2">
+                        <h6 className="text-sm font-semibold text-zinc-900">¿Problemas para acceder?</h6>
+                        <p className="mt-1 text-xs text-zinc-600">
+                            Contacta al área de soporte o recursos humanos para asistencia
+                        </p>
+
+                        <div className="mt-3 space-y-2 text-xs text-zinc-700">
+                            <div className="flex items-center gap-2">
+                                <MailIcon />
+                                <span className="truncate">soporte.sistal@empresa.cl</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <PhoneIcon />
+                                <span>+56 2 2345 6789 (Anexo 4521)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div className="min-w-0 flex flex-col gap-2">
-              <h6 className="text-sm font-semibold text-zinc-900">¿Problemas para acceder?</h6>
-              <p className="mt-1 text-xs text-zinc-600">
-                Contacta al área de soporte o recursos humanos para asistencia
-              </p>
-
-              <div className="mt-3 space-y-2 text-xs text-zinc-700">
-                <div className="flex items-center gap-2">
-                  <MailIcon />
-                  <span className="truncate">soporte.sistal@empresa.cl</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <PhoneIcon />
-                  <span>+56 2 2345 6789 (Anexo 4521)</span>
-                </div>
-              </div>
+            <div className="pt-2 text-center text-xs text-zinc-500">
+                <div>© 2025 SISTAL — Sistema de Gestión de Uniformes</div>
+                <div className="mt-1 text-zinc-400">Todos los derechos reservados</div>
             </div>
-          </div>
         </div>
-
-        {/* Footer */}
-        <div className="pt-2 text-center text-xs text-zinc-500">
-          <div>© 2025 SISTAL — Sistema de Gestión de Uniformes</div>
-          <div className="mt-1 text-zinc-400">Todos los derechos reservados</div>
-        </div>
-      </div>
-  );
+    );
 }
 
-/* ---------- Icons inline (sin dependencias) ---------- */
+function validateLogin(form) {
+    const e = {};
+    const identifier = (form.identifier || "").trim();
 
-function ShieldIcon() {
-  return (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path
-            d="M12 2l7 4v6c0 5-3 9-7 10-4-1-7-5-7-10V6l7-4z"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinejoin="round"
-        />
-      </svg>
-  );
+    if (!identifier) {
+        e.identifier = "Ingresa tu RUT o correo.";
+    } else if (identifier.includes("@")) {
+        if (!isValidEmail(identifier)) e.identifier = "El correo no tiene un formato válido.";
+    } else {
+        if (!isValidRut(identifier)) e.identifier = "El RUT no es válido.";
+    }
+
+    if (!form.password) e.password = "Ingresa tu contraseña.";
+
+    return e;
 }
 
-function QuestionIcon() {
-  return (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="M12 18h.01" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-        <path
-            d="M9.5 9a2.5 2.5 0 1 1 4 2c-.8.6-1.5 1.1-1.5 2v.5"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-        />
-        <path
-            d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"
-            stroke="currentColor"
-            strokeWidth="2"
-        />
-      </svg>
-  );
+function isValidEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i.test(email);
 }
 
-function MailIcon() {
-  return (
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="text-zinc-500" aria-hidden="true">
-        <path d="M4 6h16v12H4V6z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-        <path d="M4 7l8 6 8-6" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-      </svg>
-  );
+
+function normalizeRut(rut) {
+    return rut.toString().trim().replace(/\./g, "").replace(/-/g, "").toUpperCase();
 }
 
-function PhoneIcon() {
-  return (
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="text-zinc-500" aria-hidden="true">
-        <path
-            d="M6 3h4l2 5-3 2c1.5 3 4 5.5 7 7l2-3 5 2v4c0 1-1 2-2 2-10 0-18-8-18-18 0-1 1-2 2-2z"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinejoin="round"
-        />
-      </svg>
-  );
+function isValidRut(rut) {
+    const r = normalizeRut(rut);
+    if (!/^\d{7,8}[0-9K]$/.test(r)) return false;
+
+    const body = r.slice(0, -1);
+    const dv = r.slice(-1);
+
+    let sum = 0;
+    let mul = 2;
+
+    for (let i = body.length - 1; i >= 0; i--) {
+        sum += Number(body[i]) * mul;
+        mul = mul === 7 ? 2 : mul + 1;
+    }
+
+    const mod = 11 - (sum % 11);
+    const expected = mod === 11 ? "0" : mod === 10 ? "K" : String(mod);
+
+    return expected === dv;
 }

@@ -34,7 +34,6 @@ export default function AuthLayout() {
         "
             >
                 <div className="flex flex-col gap-5 flex-1 min-h-0">
-                    {/* Parte superior (no crece) */}
                     <div className="flex flex-col gap-5">
                         <header className="flex gap-4">
                             <div className="container-logo bg-white rounded-2xl">
