@@ -16,3 +16,11 @@ export function resetPassword(token, payload) {
   return http.post(`/auth/reset-password/${encodeURIComponent(token ?? '')}`, payload);
 }
 
+export function validateToken() {
+  return http.get('/auth/validate');
+}
+
+export function getMe() {
+  return http.get('/auth/me');
+}
+

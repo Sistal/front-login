@@ -3,6 +3,8 @@ import AuthCard from "../components/AuthCard";
 import PasswordField from "../components/PasswordField";
 import { Button, Input } from "../../../shared/ui";
 import { login as loginApi } from "../api/auth.api";
+import { saveToken, saveUser } from "../../../shared/lib/storage";
+import { ENV } from "../../../config/env";
 import { QuestionIcon, MailIcon, PhoneIcon, ShieldIcon } from "../components/Icons";
 
 const initialForm = {
@@ -48,12 +50,24 @@ export default function LoginPage() {
         try {
             setStatus({ type: "loading", message: "" });
 
-            await loginApi({
-                email: form.identifier.trim(),
+            const response = await loginApi({
+                identifier: form.identifier.trim(),
                 password: form.password,
             });
 
-            setStatus({ type: "success", message: "Ingreso correcto." });
+            // Guardar token y datos del usuario
+            saveToken(response.token);
+            saveUser(response.user);
+
+            setStatus({ type: "success", message: "Ingreso correcto. Redirigiendo..." });
+
+            // Redirigir al front-funcionario
+            const redirectUrl = ENV.APP_URL || 'http://localhost:5174';
+            console.log('Redirigiendo a:', redirectUrl);
+            
+            setTimeout(() => {
+                window.location.href = redirectUrl;
+            }, 1000);
         } catch (err) {
             setStatus({
                 type: "error",

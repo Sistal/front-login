@@ -1,12 +1,17 @@
 import { ENV } from '../../config/env';
+import storage from './storage';
 
 async function request(path, { method = 'GET', headers, body } = {}) {
   const url = `${ENV.API_BASE}${path}`;
+  
+  // Get token from storage
+  const token = storage.getToken();
 
   const res = await fetch(url, {
     method,
     headers: {
       ...(body ? { 'Content-Type': 'application/json' } : null),
+      ...(token ? { 'Authorization': `Bearer ${token}` } : null),
       ...(headers || null),
     },
     body: body ? JSON.stringify(body) : undefined,
@@ -21,7 +26,7 @@ async function request(path, { method = 'GET', headers, body } = {}) {
   }
 
   if (!res.ok) {
-    const msg = (data && data.message) || `HTTP ${res.status}`;
+    const msg = (data && (data.error || data.message)) || `HTTP ${res.status}`;
     throw new Error(msg);
   }
 

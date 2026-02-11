@@ -4,6 +4,7 @@ import { Input } from "../../../shared/ui";
 import { UserPlus } from "lucide-react";
 import AuthCard from "../components/AuthCard";
 import Footer from "../components/Footer";
+import { register } from "../api/auth.api";
 
 const initialForm = {
   rut: "",
@@ -53,22 +54,40 @@ export default function RegisterPage() {
     try {
       setStatus({ type: "loading", message: "" });
 
-      // todo llamada a api
-
-      await fakeRegister({
+      // Llamar a la API de registro
+      await register({
         rut: normalizeRut(form.rut),
+        username: form.email.trim().toLowerCase(), // Email del usuario (se guarda en nombre_usuario)
         fullName: form.fullName.trim(),
-        email: form.email.trim().toLowerCase(),
         password: form.password,
       });
 
-      setStatus({ type: "success", message: "Cuenta creada correctamente." });
+      setStatus({ type: "success", message: "Cuenta creada correctamente. Ya puedes iniciar sesión." });
       setForm(initialForm);
       setTouched({});
+      
+      // Redirigir al login después de 2 segundos
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 2000);
     } catch (err) {
+      let errorMessage = "Ocurrió un error al crear la cuenta.";
+      
+      // Manejar errores específicos del servidor
+      if (err?.response?.data?.error) {
+        const serverError = err.response.data.error.toLowerCase();
+        if (serverError.includes("email already exists")) {
+          errorMessage = "El correo electrónico ya está registrado.";
+        } else if (serverError.includes("rut already exists")) {
+          errorMessage = "El RUT ya está registrado.";
+        } else {
+          errorMessage = err.response.data.error;
+        }
+      }
+      
       setStatus({
         type: "error",
-        message: err?.message || "Ocurrió un error al crear la cuenta.",
+        message: errorMessage,
       });
     }
   }
