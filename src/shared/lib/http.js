@@ -2,7 +2,7 @@ import { ENV } from '../../config/env';
 import storage from './storage';
 
 async function request(path, { method = 'GET', headers, body } = {}) {
-  const url = `${ENV.API_BASE}${path}`;
+  const url = `http://localhost:8080${path}`;
   
   // Get token from storage
   const token = storage.getToken();

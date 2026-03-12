@@ -8,7 +8,7 @@ import { ENV } from "../../../config/env";
 import { QuestionIcon, MailIcon, PhoneIcon, ShieldIcon } from "../components/Icons";
 
 const initialForm = {
-    identifier: "", // RUT o correo
+    nombre_usuario: "", // RUT o correo
     password: "",
 };
 
@@ -37,7 +37,7 @@ export default function LoginPage() {
     async function onSubmit(e) {
         e.preventDefault();
 
-        setTouched({ identifier: true, password: true });
+        setTouched({ nombre_usuario: true, password: true });
 
         const validation = validateLogin(form);
         setErrors(validation);
@@ -51,7 +51,7 @@ export default function LoginPage() {
             setStatus({ type: "loading", message: "" });
 
             const response = await loginApi({
-                identifier: form.identifier.trim(),
+                nombre_usuario: form.nombre_usuario.trim(),
                 password: form.password,
             });
 
@@ -111,35 +111,35 @@ export default function LoginPage() {
 
                 <form onSubmit={onSubmit} className="mt-5 space-y-4 flex flex-col gap-4">
                     <div className="flex flex-col gap-2">
-                        <label className="text-xs font-medium text-zinc-700" htmlFor="identifier">
+                        <label className="text-xs font-medium text-zinc-700" htmlFor="nombre_usuario">
                             RUT o correo electrónico
                         </label>
 
                         <Input
-                            id="identifier"
-                            name="identifier"
+                            id="nombre_usuario"
+                            name="nombre_usuario"
                             type="text"
                             placeholder="Ingresa tu RUT o correo"
                             autoComplete="username"
                             required
                             disabled={isLoading}
-                            value={form.identifier}
+                            value={form.nombre_usuario}
                             onChange={handleChange}
                             onBlur={handleBlur}
-                            aria-invalid={!!showError("identifier")}
-                            aria-describedby={showError("identifier") ? errId("identifier") : undefined}
+                            aria-invalid={!!showError("nombre_usuario")}
+                            aria-describedby={showError("nombre_usuario") ? errId("nombre_usuario") : undefined}
                             className={[
                                 "mt-2 w-full rounded-xl border bg-zinc-50 px-4 py-3 text-sm text-zinc-900 outline-none placeholder:text-zinc-400",
                                 "focus:bg-white focus:ring-4 focus:ring-blue-600/10 disabled:opacity-70",
-                                showError("identifier")
+                                showError("nombre_usuario")
                                     ? "border-red-300 focus:border-red-300"
                                     : "border-zinc-200 focus:border-blue-300",
                             ].join(" ")}
                         />
 
-                        {showError("identifier") ? (
-                            <p id={errId("identifier")} className="text-xs text-red-600">
-                                {errors.identifier}
+                        {showError("nombre_usuario") ? (
+                            <p id={errId("nombre_usuario")} className="text-xs text-red-600">
+                                {errors.nombre_usuario}
                             </p>
                         ) : (
                             <p className="mt-2 text-xs text-zinc-500">Ejemplo: 18456789-2 o usuario@empresa.cl</p>
@@ -237,14 +237,14 @@ export default function LoginPage() {
 
 function validateLogin(form) {
     const e = {};
-    const identifier = (form.identifier || "").trim();
+    const nombre_usuario = (form.nombre_usuario || "").trim();
 
-    if (!identifier) {
-        e.identifier = "Ingresa tu RUT o correo.";
-    } else if (identifier.includes("@")) {
-        if (!isValidEmail(identifier)) e.identifier = "El correo no tiene un formato válido.";
+    if (!nombre_usuario) {
+        e.nombre_usuario = "Ingresa tu nombre de usuario.";
     } else {
-        if (!isValidRut(identifier)) e.identifier = "El RUT no es válido.";
+        if (!isValidEmail(nombre_usuario) && !isValidRut(nombre_usuario)) {
+            e.nombre_usuario = "Ingresa un correo o RUT válido.";
+        }
     }
 
     if (!form.password) e.password = "Ingresa tu contraseña.";

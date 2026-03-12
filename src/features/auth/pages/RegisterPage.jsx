@@ -8,7 +8,7 @@ import { register } from "../api/auth.api";
 
 const initialForm = {
   rut: "",
-  fullName: "",
+  nombre_completo: "",
   email: "",
   password: "",
   confirmPassword: "",
@@ -57,9 +57,10 @@ export default function RegisterPage() {
       // Llamar a la API de registro
       await register({
         rut: normalizeRut(form.rut),
-        username: form.email.trim().toLowerCase(), // Email del usuario (se guarda en nombre_usuario)
-        fullName: form.fullName.trim(),
+        nombre_usuario: form.email.trim().toLowerCase(), // Email del usuario (se guarda en nombre_usuario)
+        nombre_completo: form.nombre_completo.trim(),
         password: form.password,
+        id_rol: 1,
       });
 
       setStatus({ type: "success", message: "Cuenta creada correctamente. Ya puedes iniciar sesión." });
@@ -152,27 +153,27 @@ export default function RegisterPage() {
             </div>
 
             <div className="flex flex-col gap-2">
-              <label className="text-xs font-medium text-zinc-700" htmlFor="fullName">
+              <label className="text-xs font-medium text-zinc-700" htmlFor="nombre_completo">
                 Nombre completo
               </label>
               <Input
-                  id="fullName"
-                  name="fullName"
+                  id="nombre_completo"
+                  name="nombre_completo"
                   type="text"
                   placeholder="Juan Pérez"
                   autoComplete="name"
                   required
                   disabled={isLoading}
-                  value={form.fullName}
+                  value={form.nombre_completo}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  aria-invalid={!!showError("fullName")}
-                  aria-describedby={showError("fullName") ? errId("fullName") : undefined}
+                  aria-invalid={!!showError("nombre_completo")}
+                  aria-describedby={showError("nombre_completo") ? errId("nombre_completo") : undefined}
                   className="mt-2 w-full rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm text-zinc-900 outline-none placeholder:text-zinc-400 focus:border-blue-300 focus:bg-white focus:ring-4 focus:ring-blue-600/10 disabled:opacity-70"
               />
-              {showError("fullName") && (
-                  <p id={errId("fullName")} className="text-xs text-red-600">
-                    {errors.fullName}
+              {showError("nombre_completo") && (
+                  <p id={errId("nombre_completo")} className="text-xs text-red-600">
+                    {errors.nombre_completo}
                   </p>
               )}
             </div>
@@ -280,9 +281,9 @@ function validateAll(form) {
   if (!form.rut.trim()) e.rut = "El RUT es obligatorio.";
   else if (!isValidRut(form.rut)) e.rut = "El RUT no es válido.";
 
-  const name = form.fullName.trim();
-  if (!name) e.fullName = "El nombre es obligatorio.";
-  else if (name.length < 4) e.fullName = "Escribe tu nombre completo.";
+  const name = form.nombre_completo.trim();
+  if (!name) e.nombre_completo = "El nombre es obligatorio.";
+  else if (name.length < 4) e.nombre_completo = "Escribe tu nombre completo.";
 
   const email = form.email.trim().toLowerCase();
   if (!email) e.email = "El correo es obligatorio.";
