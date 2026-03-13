@@ -8,7 +8,10 @@ import { register } from "../api/auth.api";
 
 const initialForm = {
   rut: "",
-  nombre_completo: "",
+  nombres: "",
+  apellido_paterno: "",
+  apellido_materno: "",
+  genero: "",
   email: "",
   password: "",
   confirmPassword: "",
@@ -25,7 +28,10 @@ export default function RegisterPage() {
   }, [form]);
 
   function handleChange(e) {
-    const { name, value } = e.target;
+    let { name, value } = e.target;
+    if (name === "rut") {
+      value = formatRutInput(value);
+    }
     setForm((prev) => ({ ...prev, [name]: value }));
   }
 
@@ -56,9 +62,15 @@ export default function RegisterPage() {
 
       // Llamar a la API de registro
       await register({
+        nombre_usuario: form.email.trim().toLowerCase(),
+        nombre_completo: `${form.nombres.trim()} ${form.apellido_paterno.trim()} ${form.apellido_materno.trim()}`.trim(),
         rut: normalizeRut(form.rut),
-        nombre_usuario: form.email.trim().toLowerCase(), // Email del usuario (se guarda en nombre_usuario)
-        nombre_completo: form.nombre_completo.trim(),
+        rut_funcionario: normalizeRut(form.rut),
+        email: form.email.trim().toLowerCase(),
+        nombres: form.nombres.trim(),
+        apellido_paterno: form.apellido_paterno.trim(),
+        apellido_materno: form.apellido_materno.trim(),
+        genero: Number(form.genero),
         password: form.password,
         id_rol: 1,
       });
@@ -153,27 +165,105 @@ export default function RegisterPage() {
             </div>
 
             <div className="flex flex-col gap-2">
-              <label className="text-xs font-medium text-zinc-700" htmlFor="nombre_completo">
-                Nombre completo
+              <label className="text-xs font-medium text-zinc-700" htmlFor="nombres">
+                Nombres
               </label>
               <Input
-                  id="nombre_completo"
-                  name="nombre_completo"
+                  id="nombres"
+                  name="nombres"
                   type="text"
-                  placeholder="Juan Pérez"
-                  autoComplete="name"
+                  placeholder="Juan Andrés"
+                  autoComplete="given-name"
                   required
                   disabled={isLoading}
-                  value={form.nombre_completo}
+                  value={form.nombres}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  aria-invalid={!!showError("nombre_completo")}
-                  aria-describedby={showError("nombre_completo") ? errId("nombre_completo") : undefined}
+                  aria-invalid={!!showError("nombres")}
+                  aria-describedby={showError("nombres") ? errId("nombres") : undefined}
                   className="mt-2 w-full rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm text-zinc-900 outline-none placeholder:text-zinc-400 focus:border-blue-300 focus:bg-white focus:ring-4 focus:ring-blue-600/10 disabled:opacity-70"
               />
-              {showError("nombre_completo") && (
-                  <p id={errId("nombre_completo")} className="text-xs text-red-600">
-                    {errors.nombre_completo}
+              {showError("nombres") && (
+                  <p id={errId("nombres")} className="text-xs text-red-600">
+                    {errors.nombres}
+                  </p>
+              )}
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label className="text-xs font-medium text-zinc-700" htmlFor="apellido_paterno">
+                Apellido paterno
+              </label>
+              <Input
+                  id="apellido_paterno"
+                  name="apellido_paterno"
+                  type="text"
+                  placeholder="Pérez"
+                  autoComplete="family-name"
+                  required
+                  disabled={isLoading}
+                  value={form.apellido_paterno}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  aria-invalid={!!showError("apellido_paterno")}
+                  aria-describedby={showError("apellido_paterno") ? errId("apellido_paterno") : undefined}
+                  className="mt-2 w-full rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm text-zinc-900 outline-none placeholder:text-zinc-400 focus:border-blue-300 focus:bg-white focus:ring-4 focus:ring-blue-600/10 disabled:opacity-70"
+              />
+              {showError("apellido_paterno") && (
+                  <p id={errId("apellido_paterno")} className="text-xs text-red-600">
+                    {errors.apellido_paterno}
+                  </p>
+              )}
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label className="text-xs font-medium text-zinc-700" htmlFor="apellido_materno">
+                Apellido materno
+              </label>
+              <Input
+                  id="apellido_materno"
+                  name="apellido_materno"
+                  type="text"
+                  placeholder="González"
+                  autoComplete="additional-name"
+                  disabled={isLoading}
+                  value={form.apellido_materno}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  aria-invalid={!!showError("apellido_materno")}
+                  aria-describedby={showError("apellido_materno") ? errId("apellido_materno") : undefined}
+                  className="mt-2 w-full rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm text-zinc-900 outline-none placeholder:text-zinc-400 focus:border-blue-300 focus:bg-white focus:ring-4 focus:ring-blue-600/10 disabled:opacity-70"
+              />
+              {showError("apellido_materno") && (
+                  <p id={errId("apellido_materno")} className="text-xs text-red-600">
+                    {errors.apellido_materno}
+                  </p>
+              )}
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label className="text-xs font-medium text-zinc-700" htmlFor="genero">
+                Género
+              </label>
+              <select
+                  id="genero"
+                  name="genero"
+                  required
+                  disabled={isLoading}
+                  value={form.genero}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  aria-invalid={!!showError("genero")}
+                  aria-describedby={showError("genero") ? errId("genero") : undefined}
+                  className="mt-2 w-full rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm text-zinc-900 outline-none focus:border-blue-300 focus:bg-white focus:ring-4 focus:ring-blue-600/10 disabled:opacity-70"
+              >
+                <option value="">Selecciona una opción</option>
+                <option value="1">Masculino</option>
+                <option value="2">Femenino</option>
+              </select>
+              {showError("genero") && (
+                  <p id={errId("genero")} className="text-xs text-red-600">
+                    {errors.genero}
                   </p>
               )}
             </div>
@@ -279,11 +369,22 @@ function validateAll(form) {
   const e = {};
 
   if (!form.rut.trim()) e.rut = "El RUT es obligatorio.";
+  else if (!/^[0-9]+-[0-9K]$/.test(form.rut)) e.rut = "El formato debe ser 12345678-9.";
   else if (!isValidRut(form.rut)) e.rut = "El RUT no es válido.";
 
-  const name = form.nombre_completo.trim();
-  if (!name) e.nombre_completo = "El nombre es obligatorio.";
-  else if (name.length < 4) e.nombre_completo = "Escribe tu nombre completo.";
+  const nombres = form.nombres.trim();
+  if (!nombres) e.nombres = "Los nombres son obligatorios.";
+  else if (nombres.length < 2) e.nombres = "Ingresa un nombre válido.";
+
+  const apPaterno = form.apellido_paterno.trim();
+  if (!apPaterno) e.apellido_paterno = "El apellido paterno es obligatorio.";
+  else if (apPaterno.length < 2) e.apellido_paterno = "Ingresa un apellido válido.";
+
+  const apMaterno = form.apellido_materno.trim();
+  if (apMaterno && apMaterno.length < 2) e.apellido_materno = "Ingresa un apellido válido.";
+
+  if (!form.genero) e.genero = "El género es obligatorio.";
+  else if (!["1", "2"].includes(form.genero)) e.genero = "Selecciona un género válido.";
 
   const email = form.email.trim().toLowerCase();
   if (!email) e.email = "El correo es obligatorio.";
@@ -306,6 +407,16 @@ function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i.test(email);
 }
 
+function formatRutInput(value) {
+  let cleaned = value.replace(/[^0-9kK]/g, "").toUpperCase();
+  if (cleaned.length === 0) return "";
+  if (cleaned.length <= 1) return cleaned;
+  if (cleaned.length > 9) {
+    cleaned = cleaned.slice(0, 9);
+  }
+  return cleaned.slice(0, -1) + "-" + cleaned.slice(-1);
+}
+
 function passwordRules(pw) {
   if (pw.length < 8) return "Debe tener al menos 8 caracteres.";
   if (!/[a-z]/.test(pw)) return "Debe incluir al menos una letra minúscula.";
@@ -315,20 +426,26 @@ function passwordRules(pw) {
 }
 
 function normalizeRut(rut) {
-  return rut
+  const cleaned = (rut ?? "")
       .toString()
       .trim()
       .replace(/\./g, "")
       .replace(/-/g, "")
       .toUpperCase();
+
+  if (!cleaned) return "";
+  if (cleaned.length === 1) return cleaned;
+
+  const body = cleaned.slice(0, -1);
+  const dv = cleaned.slice(-1);
+  return `${body}-${dv}`;
 }
 
 function isValidRut(rut) {
-  const r = normalizeRut(rut);
-  if (!/^\d{7,8}[0-9K]$/.test(r)) return false;
+  const normalized = normalizeRut(rut);
+  if (!/^\d{7,8}-[0-9K]$/.test(normalized)) return false;
 
-  const body = r.slice(0, -1);
-  const dv = r.slice(-1);
+  const [body, dv] = normalized.split("-");
 
   let sum = 0;
   let mul = 2;

@@ -9,6 +9,7 @@ async function request(path, { method = 'GET', headers, body } = {}) {
 
   const res = await fetch(url, {
     method,
+    credentials: 'include',
     headers: {
       ...(body ? { 'Content-Type': 'application/json' } : null),
       ...(token ? { 'Authorization': `Bearer ${token}` } : null),
