@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: front-login-svc
+  namespace: default
+  labels:
+    app: front-login
+spec:
+  type: ClusterIP
+  selector:
+    app: front-login
+  ports:
+  - port: 3000        # Puerto del Service dentro del clúster
+    targetPort: 3000  # Puerto del contenedor (NGINX sirviendo React)
+    protocol: TCP

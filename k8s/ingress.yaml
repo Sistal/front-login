@@ -1,0 +1,44 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: frontend-ingress
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  tls:
+  - hosts:
+    - app.construtem.com    # Subdominio para el Frontend 1
+    - admin.construtem.com  # Subdominio para el Frontend 2
+    secretName: frontends-tls-cert # cert-manager gestionará este certificado unificado
+  rules:
+  
+  # ------------------------------------------
+  # FRONTEND 1: Clientes / App Principal
+  # ------------------------------------------
+  - host: app.construtem.com # REEMPLAZA por tu subdominio real
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: front-login-svc # Apunta al Service definido arriba
+            port:
+              number: 3000
+
+  # ------------------------------------------
+  # FRONTEND 2: Panel de Administración
+  # ------------------------------------------
+  - host: admin.construtem.com # REEMPLAZA por tu subdominio real
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: front-admin-svc # Apunta al Service de tu segundo frontend
+            port:
+              number: 3000

@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: front-login
+  namespace: sistal
+  labels:
+    app: front-login
+    tier: frontend
+spec:
+  replicas: 2 # Alta disponibilidad
+  selector:
+    matchLabels:
+      app: front-login
+  template:
+    metadata:
+      labels:
+        app: front-login
+    spec:
+      containers:
+      - name: front-login
+        # Asegúrate de que tu Dockerfile de React use un servidor como NGINX para servir los estáticos
+        image: southamerica-east1-docker.pkg.dev/construtem/microservicios-construtem/front-login:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000 # NGINX dentro del contenedor expone el puerto 3000 por defecto
+        
+        # Opcional: Recursos. Los frontends estáticos consumen muy poca RAM/CPU
+        resources:
+          requests:
+            cpu: "50m"
+            memory: "64Mi"
+          limits:
+            cpu: "200m"
+            memory: "128Mi"
