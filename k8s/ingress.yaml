@@ -4,6 +4,8 @@ metadata:
   name: frontend-login-ingress
   namespace: sistal
   annotations:
+    # Redirigir la raiz del sitio a /login
+    nginx.ingress.kubernetes.io/app-root: /login
     # 1. Habilitamos expresiones regulares (obligatorio en NGINX moderno)
     nginx.ingress.kubernetes.io/use-regex: "true"
     # 2. Corregimos el rewrite para que pase la ruta correctamente a tu app React
@@ -23,18 +25,9 @@ spec:
     http:
       paths:
       - path: /login(/|$)(.*)
-        # 5. Cambio clave para que no arroje error "cannot be used with pathType Prefix"
         pathType: ImplementationSpecific
         backend:
           service:
             name: front-login-svc
-            port:
-              number: 3000
-      - path: /funcionario(/|$)(.*)
-        # 5. Cambio clave
-        pathType: ImplementationSpecific
-        backend:
-          service:
-            name: front-funcionario-svc
             port:
               number: 3000
