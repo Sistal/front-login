@@ -35,6 +35,6 @@ spec:
         pathType: ImplementationSpecific
         backend:
           service:
-            name: front-login-svc
+            name: front-funcionario-svc
             port:
               number: 3000
