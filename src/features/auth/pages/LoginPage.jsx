@@ -62,7 +62,7 @@ export default function LoginPage() {
             setStatus({ type: "success", message: "Ingreso correcto. Redirigiendo..." });
 
             // Redirigir al front-funcionario
-            const redirectUrl = ENV.APP_URL || 'http://localhost:5174';
+            const redirectUrl = ENV.VITE_FUNCIONARIO_URL || 'http://localhost:5174';
             console.log('Redirigiendo a:', redirectUrl);
             
             setTimeout(() => {

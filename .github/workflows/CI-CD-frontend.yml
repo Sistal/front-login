@@ -43,6 +43,7 @@ jobs:
           IMAGE_TAG=${{ env.GAR_REPO }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
           docker build \
             --build-arg VITE_API_BASE="https://api-sistal-dev.sistal.cl" \
+            --build-arg VITE_FUNCIONARIO_URL="https://sistal-dev.sistal.cl/funcionario" \
             -t $IMAGE_TAG .
           docker push $IMAGE_TAG
 

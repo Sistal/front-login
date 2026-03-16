@@ -4,6 +4,15 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 COPY package.json package-lock.json* ./
 RUN npm ci
+
+# Agregar ARGs de entorno
+ARG VITE_API_BASE
+ARG VITE_FUNCIONARIO_URL
+
+# Asignarlos como ENV para que Vite los lea en build time
+ENV VITE_API_BASE=$VITE_API_BASE
+ENV VITE_FUNCIONARIO_URL=$VITE_FUNCIONARIO_URL
+
 COPY . .
 RUN npm run build
 
