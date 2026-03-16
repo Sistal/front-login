@@ -29,7 +29,9 @@ const router = createBrowserRouter([
     path: '*',
     element: <Navigate to={ROUTES.LOGIN} replace />,
   },
-]);
+], {
+  basename: '/login'
+});
 
 export default function AppRoutes() {
   return <RouterProvider router={router} />;
