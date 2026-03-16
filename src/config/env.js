@@ -12,7 +12,7 @@ const getEnvVar = (key, defaultValue) => {
 
 export const ENV = {
   MODE: import.meta.env.MODE,
-  API_BASE: getEnvVar('VITE_API_BASE', '/api'),
+  API_BASE: getEnvVar('VITE_API_BASE'),
   APP_URL: getEnvVar('VITE_FUNCIONARIO_URL', 'http://localhost:5174'),
 };
 
