@@ -1,0 +1,33 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: frontend-login-ingress
+  namespace: sistal
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  tls:
+  - hosts:
+    - sistal-dev.sistal.cl
+    secretName: sistal-dev-tls-cert
+  rules:
+  - host: sistal-dev.sistal.cl
+    http:
+      paths:
+      - path: /login(/|$)(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: front-login-svc
+            port:
+              number: 3000
+      - path: /funcionario(/|$)(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: front-login-svc
+            port:
+              number: 3000

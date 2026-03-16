@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: front-login
+  namespace: sistal
+  labels:
+    app: front-login
+    tier: frontend
+spec:
+  replicas: 2 # Alta disponibilidad
+  selector:
+    matchLabels:
+      app: front-login
+  template:
+    metadata:
+      labels:
+        app: front-login
+    spec:
+      containers:
+      - name: front-login
+        # La imagen debe coincidir con el registry de GCP y usar IMAGE_PLACEHOLDER para el CI/CD
+        image: us-east1-docker.pkg.dev/sistal-490016/sistal-docker-images/front-login:IMAGE_PLACEHOLDER
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000 # NGINX dentro del contenedor expone el puerto 3000 por defecto
+        
+        # Opcional: Recursos. Los frontends estáticos consumen muy poca RAM/CPU
+        resources:
+          requests:
+            cpu: "50m"
+            memory: "64Mi"
+          limits:
+            cpu: "200m"
+            memory: "128Mi"

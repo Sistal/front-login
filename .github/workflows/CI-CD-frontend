@@ -1,0 +1,54 @@
+name: CI/CD Frontend React
+
+on:
+  push:
+    branches: [main]
+
+env:
+  PROJECT_ID: sistal-490016
+  REGION: us-central1
+  CLUSTER_NAME: sistal-qa
+  GAR_REPO: us-central1-docker.pkg.dev/sistal-490016/sistal-docker-images
+  IMAGE_NAME: front-login # <-- Cambia esto
+
+jobs:
+  build-and-deploy:
+    name: Build, Push y Deploy Frontend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v3
+
+      - name: Autenticarse en GCP
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Configurar Docker para Artifact Registry
+        run: gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev
+
+      - name: Construir y subir imagen Docker (React)
+        # Aquí pasamos variables al frontend (ej. la URL de la API de sistal-dev)
+        run: |
+          IMAGE_TAG=${{ env.GAR_REPO }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          docker build \
+            --build-arg REACT_APP_API_URL="https://api-sistal-dev.sistal.cl" \
+            -t $IMAGE_TAG .
+          docker push $IMAGE_TAG
+
+      - name: Configurar acceso a GKE
+        uses: google-github-actions/get-gke-credentials@v1
+        with:
+          cluster_name: ${{ env.CLUSTER_NAME }}
+          location: ${{ env.REGION }}
+          project_id: ${{ env.PROJECT_ID }}
+
+      - name: Reemplazar TAG en manifiestos
+        run: sed -i "s/IMAGE_PLACEHOLDER/${{ github.sha }}/g" k8s/deployment.yaml
+
+      - name: Desplegar en Kubernetes
+        # Esto aplicará deployment.yaml, service.yaml y tu ingress.yaml del frontend
+        run: kubectl apply -f k8s/
+
+      - name: Verificar estado del rollout
+        run: kubectl rollout status deployment/${{ env.IMAGE_NAME }} -n sistal
