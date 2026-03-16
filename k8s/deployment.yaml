@@ -18,8 +18,8 @@ spec:
     spec:
       containers:
       - name: front-login
-        # Asegúrate de que tu Dockerfile de React use un servidor como NGINX para servir los estáticos
-        image: southamerica-east1-docker.pkg.dev/construtem/microservicios-construtem/front-login:latest
+        # La imagen debe coincidir con el registry de GCP y usar IMAGE_PLACEHOLDER para el CI/CD
+        image: us-east1-docker.pkg.dev/sistal-490016/sistal-docker-images/front-login:IMAGE_PLACEHOLDER
         imagePullPolicy: Always
         ports:
         - containerPort: 3000 # NGINX dentro del contenedor expone el puerto 3000 por defecto
