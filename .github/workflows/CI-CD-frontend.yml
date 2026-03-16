@@ -24,6 +24,13 @@ jobs:
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
 
+      - name: Iniciar sesión en Artifact Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGION }}-docker.pkg.dev
+          username: _json_key
+          password: ${{ secrets.GCP_SA_KEY }}
+
       - name: Configurar Google Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
 
