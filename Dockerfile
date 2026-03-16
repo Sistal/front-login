@@ -19,7 +19,7 @@ COPY entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 
 # Expose port
-EXPOSE 5173
+EXPOSE 3000
 
 # Use entrypoint script
 ENTRYPOINT ["/docker-entrypoint.sh"]

@@ -4,11 +4,16 @@ metadata:
   name: frontend-login-ingress
   namespace: sistal
   annotations:
-    kubernetes.io/ingress.class: "nginx"
+    # 1. Habilitamos expresiones regulares (obligatorio en NGINX moderno)
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    # 2. Corregimos el rewrite para que pase la ruta correctamente a tu app React
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    # 3. Cert-manager (esto está perfecto)
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
+  # 4. Forma moderna de asignar NGINX
+  ingressClassName: nginx
   tls:
   - hosts:
     - sistal-dev.sistal.cl
@@ -18,14 +23,16 @@ spec:
     http:
       paths:
       - path: /login(/|$)(.*)
-        pathType: Prefix
+        # 5. Cambio clave para que no arroje error "cannot be used with pathType Prefix"
+        pathType: ImplementationSpecific
         backend:
           service:
             name: front-login-svc
             port:
               number: 3000
       - path: /funcionario(/|$)(.*)
-        pathType: Prefix
+        # 5. Cambio clave
+        pathType: ImplementationSpecific
         backend:
           service:
             name: front-login-svc
