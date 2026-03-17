@@ -1,4 +1,5 @@
 import React from "react";
+import { Link, useNavigate } from "react-router-dom";
 import PasswordField from "../components/PasswordField";
 import { Input } from "../../../shared/ui";
 import { UserPlus } from "lucide-react";
@@ -18,6 +19,7 @@ const initialForm = {
 };
 
 export default function RegisterPage() {
+  const navigate = useNavigate();
   const [form, setForm] = React.useState(initialForm);
   const [touched, setTouched] = React.useState({});
   const [errors, setErrors] = React.useState({});
@@ -81,7 +83,7 @@ export default function RegisterPage() {
       
       // Redirigir al login después de 2 segundos
       setTimeout(() => {
-        window.location.href = "/";
+        navigate("/");
       }, 2000);
     } catch (err) {
       let errorMessage = "Ocurrió un error al crear la cuenta.";
@@ -354,7 +356,7 @@ export default function RegisterPage() {
           </form>
             <div className={'flex gap-5 w-full justify-center text-sm mt-4'}>
               <span>¿Ya tienes una cuenta?</span>
-              <a className={'text-blue-600 font-bold'} href={"/"}>Iniciar sesión</a>
+              <Link className={'text-blue-600 font-bold'} to="/">Iniciar sesión</Link>
             </div>
         </AuthCard>
 

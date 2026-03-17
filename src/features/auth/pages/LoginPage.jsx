@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import AuthCard from "../components/AuthCard";
 import PasswordField from "../components/PasswordField";
 import { Button, Input } from "../../../shared/ui";
@@ -62,7 +63,7 @@ export default function LoginPage() {
             setStatus({ type: "success", message: "Ingreso correcto. Redirigiendo..." });
 
             // Redirigir al front-funcionario
-            const redirectUrl = ENV.VITE_FUNCIONARIO_URL || 'http://localhost:5174';
+            const redirectUrl = ENV.APP_URL || 'http://localhost:5174';
             console.log('Redirigiendo a:', redirectUrl);
             
             setTimeout(() => {
@@ -183,21 +184,21 @@ export default function LoginPage() {
                         </Button>
 
                         <div className="text-center">
-                            <a
+                            <Link
                                 className="text-xs font-medium text-blue-600 hover:text-blue-700 cursor-pointer "
-                                href={"/forgot-password"}
+                                to="/forgot-password"
                             >
                                 ¿Olvidaste tu contraseña?
-                            </a>
+                            </Link>
                         </div>
                     </div>
                 </form>
 
                 <div className="flex gap-5 w-full justify-center text-sm">
                     <span>¿No tienes una cuenta?</span>
-                    <a className="text-blue-600 font-bold" href={"/register"}>
+                    <Link className="text-blue-600 font-bold" to="/register">
                         Regístrate Aquí
-                    </a>
+                    </Link>
                 </div>
             </AuthCard>
 
