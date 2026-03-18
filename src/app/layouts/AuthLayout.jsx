@@ -42,7 +42,7 @@ export default function AuthLayout() {
 
                             <div>
                                 <h3 className="text-white">SISTAL</h3>
-                                // <p className="text-white">v1.0</p>
+                                <p className="text-white"></p>
                             </div>
                         </header>
 
