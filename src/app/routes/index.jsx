@@ -9,31 +9,36 @@ import RegisterPage from '../../features/auth/pages/RegisterPage';
 import ForgotPasswordPage from '../../features/auth/pages/ForgotPasswordPage';
 import ResetPasswordPage from '../../features/auth/pages/ResetPasswordPage';
 
-const router = createBrowserRouter([
-  {
-    path: ROUTES.ROOT,
-    element: <Navigate to={ROUTES.LOGIN} replace />,
-  },
-  {
-    path: ROUTES.LOGIN,
-    element: <AuthLayout />,
-    children: [
-      { path: '/', element: <LoginPage /> },
-      { path: 'register', element: <RegisterPage /> },
-      { path: 'forgot-password', element: <ForgotPasswordPage /> },
-      { path: 'reset-password/:token', element: <ResetPasswordPage /> },
-      { path: '*', element: <Navigate to={ROUTES.LOGIN} replace /> },
-    ],
-  },
-  {
-    path: '*',
-    element: <Navigate to={ROUTES.LOGIN} replace />,
-  },
-], {
-  basename: '/login'
-});
-
 export default function AppRoutes() {
   return <RouterProvider router={router} />;
 }
 
+const router = createBrowserRouter([
+  {
+    // Redirección inicial: de "/" a "/login"
+    path: '/',
+    element: <Navigate to="/login" replace />,
+  },
+  {
+    path: '/login',
+    element: <AuthLayout />,
+    children: [
+      { 
+        index: true, // Esto hace que el componente cargue en "/login"
+        element: <LoginPage /> 
+      },
+      { 
+        path: 'register', // Esto será "/login/register"
+        element: <RegisterPage /> 
+      },
+      { 
+        path: 'forgot-password', 
+        element: <ForgotPasswordPage /> 
+      },
+    ],
+  },
+  {
+    path: '*',
+    element: <Navigate to="/login" replace />,
+  },
+]);

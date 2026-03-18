@@ -6,6 +6,7 @@ import { login as loginApi } from "../api/auth.api";
 import { saveToken, saveUser } from "../../../shared/lib/storage";
 import { ENV } from "../../../config/env";
 import { QuestionIcon, MailIcon, PhoneIcon, ShieldIcon } from "../components/Icons";
+import { Link } from 'react-router-dom';
 
 const initialForm = {
     nombre_usuario: "", // RUT o correo
@@ -62,7 +63,7 @@ export default function LoginPage() {
             setStatus({ type: "success", message: "Ingreso correcto. Redirigiendo..." });
 
             // Redirigir al front-funcionario
-            const redirectUrl = `${ENV.VITE_FUNCIONARIO_URL}` || 'http://localhost:5174';
+            const redirectUrl = `${ENV.VITE_FUNCIONARIO_URL}/funcionario` || 'http://localhost:5174';
             console.log('Redirigiendo a:', redirectUrl);
             
             setTimeout(() => {
@@ -183,21 +184,21 @@ export default function LoginPage() {
                         </Button>
 
                         <div className="text-center">
-                            <a
+                            <Link
                                 className="text-xs font-medium text-blue-600 hover:text-blue-700 cursor-pointer "
-                                href={"/forgot-password"}
+                                to="/forgot-password"
                             >
                                 ¿Olvidaste tu contraseña?
-                            </a>
+                            </Link>
                         </div>
                     </div>
                 </form>
 
                 <div className="flex gap-5 w-full justify-center text-sm">
                     <span>¿No tienes una cuenta?</span>
-                    <a className="text-blue-600 font-bold" href={"/register"}>
+                    <Link className="text-blue-600 font-bold" to="/login/register">
                         Regístrate Aquí
-                    </a>
+                    </Link>
                 </div>
             </AuthCard>
 
