@@ -22,12 +22,12 @@ const ListAside = {
 
 export default function AuthLayout() {
     return (
-        <div className="flex">
+        <div className="flex h-screen overflow-hidden">
             <aside
                 className="
           hidden sm:flex flex-col
           relative overflow-hidden
-          h-screen w-[500px]
+          h-full w-[500px]
           px-[48px] pt-[48px]
           gap-10
           bg-gradient-to-r from-[#1C398E]/95 via-[#193CB8]/90 to-[#1C398E]/95
@@ -73,8 +73,8 @@ export default function AuthLayout() {
                     </div>
                 </div>
             </aside>
-            <main className="flex-1 h-screen">
-                <div className="w-full max-w-md min-h-full mx-auto flex flex-col justify-center space-y-6 px-6">
+            <main className="flex-1 h-full overflow-y-auto">
+                <div className="w-full max-w-md min-h-full mx-auto flex flex-col justify-center space-y-6 px-6 py-8">
                     <Outlet/>
                 </div>
             </main>
